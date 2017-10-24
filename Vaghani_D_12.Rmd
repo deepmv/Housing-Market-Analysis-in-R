@@ -1,0 +1,115 @@
+---
+title: "Vaghani_D_12"
+output:
+  html_document: default
+  word_document: default
+---
+
+# Task 1
+```{r}
+#Installing Mongodb Server on system.
+#see the steps in attached image with this assignment.
+
+```
+
+
+#Task 2
+```{r}
+Birdstrikes <- read.csv("BirdStrikes.csv")
+mongoBirdstrikes <- mongo("Birdstrikes")
+mongoBirdstrikes$insert(Birdstrikes)
+```
+#[OUTPOUT]
+Complete! Processed total of 99405 rows.
+$nInserted
+[1] 99405
+
+```{r}
+mongoBirdstrikes$export(file("data.txt"))
+```
+#[OUTPUT]
+[output]
+Done! Exported a total of 99405 lines.
+
+
+
+#Task 3A Distinct Airport Names
+```{r}
+mongoBirdstrikes$distinct("AirportName")
+```
+#[OUTPUT]
+head(mongoBirdstrikes$distinct("AirportName"))
+
+[1] "NEWARK LIBERTY INTL ARPT"          "UNKNOWN"                          
+[3] "DENVER INTL AIRPORT"               "CHICAGO O'HARE INTL ARPT"         
+[5] "JOHN F KENNEDY INTL"               "CINCINNATI MUNI ARPT-LUNKEN FIELD"
+
+
+
+#Task 3B Count with origin state = New Jersey
+```{r}
+
+Jersey <- mongoBirdstrikes$count('{"OriginState":"New Jersey"}')
+```
+#[OUTOPUT]
+head(Jersey)
+[1] 2936
+
+
+#Task 3C Getting data with conditions=Fog and has fields like Record ID in desceding order.
+```{r}
+
+fog <- mongoBirdstrikes$find('{"ConditionsPrecipitation":"Fog"}', sort= '{"RecordID":-1}')
+```
+#[OUTPUT]
+head(fog)
+  AircraftType                  AirportName Altitudebin AircraftMakeModel WildlifeNumberstruck
+1     Airplane            REDDING MUNICIPAL   > 1000 ft           EMB-120                    1
+2     Airplane            HEATHROW - LONDON   < 1000 ft             A-330              2 to 10
+3     Airplane             ADAMS FIELD ARPT   > 1000 ft          CL-RJ900                    1
+4     Airplane GEORGE BUSH INTERCONTINENTAL   < 1000 ft           EMB-145              2 to 10
+5     Airplane          JOHN F KENNEDY INTL   < 1000 ft         B-737-800            11 to 100
+6     Airplane              SACRAMENTO INTL     Unknown      CL-RJ100/200                    1
+  EffectImpacttoflight EffectOther LocationNearbyifenroute AircraftFlightNumber    FlightDate
+1                 None                                                          12/30/11 0:00
+2                 None                                                           12/6/10 0:00
+3                                                                          2681 12/13/11 0:00
+4                 None                                                    4672? 12/31/11 0:00
+5                 None                                                     1850  12/5/11 0:00
+6                 None                                                     4562 11/29/11 0:00
+
+
+#Task 3D Fetch columns for AircraftAirlineOperator with certain columns.
+```{r}
+
+AAirlines<- mongoBirdstrikes$find('{"AircraftAirlineOperator":"AMERICAN AIRLINES"}', fields = '{"RecordID":1, "OriginState":1, "AircraftAirlineOperator":1, "AirportName":1}')
+```
+Imported 3851 records. Simplifying into dataframe...
+
+#[OUTPUT]
+head(AAirlines)
+                       _id                 AirportName RecordID AircraftAirlineOperator OriginState
+1 58432f8f49f3ee01971d4e77                     UNKNOWN   204787       AMERICAN AIRLINES         N/A
+2 58432f8f49f3ee01971d4e86        MINETA SAN JOSE INTL   208470       AMERICAN AIRLINES  California
+3 58432f8f49f3ee01971d4e9d         JOHN F KENNEDY INTL   202568       AMERICAN AIRLINES    New York
+4 58432f8f49f3ee01971d4ea5 DALLAS/FORT WORTH INTL ARPT   200470       AMERICAN AIRLINES       Texas
+5 58432f8f49f3ee01971d4eb3         JOHN F KENNEDY INTL   202957       AMERICAN AIRLINES    New York
+6 58432f8f49f3ee01971d4ed4        SANTO DOMINGO/LAS AM   200801       AMERICAN AIRLINES         N/A
+```{r}
+CONAirlines<- mongoBirdstrikes$find('{"AircraftAirlineOperator":"CONTINENTAL AIRLINES"}', fields = '{"RecordID":1, "OriginState":1, "AircraftAirlineOperator":1, "AirportName":1}')
+```
+
+Imported 833 records. Simplifying into dataframe...
+
+#[OUTPUT]
+head(CONAirlines)
+                       _id              AirportName RecordID AircraftAirlineOperator OriginState
+1 58432f8f49f3ee01971d4e71 NEWARK LIBERTY INTL ARPT   200508    CONTINENTAL AIRLINES  New Jersey
+2 58432f8f49f3ee01971d4e8a  LAFAYETTE REGIONAL (LA)   204764    CONTINENTAL AIRLINES   Louisiana
+3 58432f8f49f3ee01971d4f31                  UNKNOWN   208539    CONTINENTAL AIRLINES         N/A
+4 58432f8f49f3ee01971d4fc2                  UNKNOWN   205201    CONTINENTAL AIRLINES         N/A
+5 58432f8f49f3ee01971d5069 NEWARK LIBERTY INTL ARPT   202226    CONTINENTAL AIRLINES  New Jersey
+6 58432f8f49f3ee01971d5089                  UNKNOWN   202964    CONTINENTAL AIRLINES         N/A
+
+
+
